@@ -1,41 +1,41 @@
 const routes = {
   '/': () => new Response(`
-  <!DOCTYPE html>
-  <html lang="en">
-  <div id="messages"></div>
-  <form id="chatbox"><input id="message" /></form>
-  
-  <script>
-    var messages = document.getElementById('messages')
-    var form = document.getElementById('chatbox')
-    var message = document.getElementById('message')
-  
-    // Subscribe and respond to events
-    var events = new EventSource("/messages");
-    events.addEventListener("open", () => {
-      console.log('connected')
-    })
-    events.addEventListener("error", () => {
-      console.log("ready state", events.readyState)
-    })
-    events.addEventListener("message", (e) => {
-      console.log('got message', e.data)
-      console.log(e.data);
-      const p = document.createElement('p')
-      p.appendChild(document.createTextNode(JSON.parse(e.data)))
-      messages.appendChild(p)
-    })
-  
-    form.addEventListener('submit', (event) => {
-      event.stopPropagation()
-      event.preventDefault()
-      fetch('/send?message=' + message.value)
-      message.value = ''
-    })
-  </script>
-  
-  </html>
-  `)
+<!DOCTYPE html>
+<html lang="en">
+<div id="messages"></div>
+<form id="chatbox"><input id="message" /></form>
+
+<script>
+  var messages = document.getElementById('messages')
+  var form = document.getElementById('chatbox')
+  var message = document.getElementById('message')
+
+  // Subscribe and respond to events
+  var events = new EventSource("/messages");
+  events.addEventListener("open", () => {
+    console.log('connected')
+  })
+  events.addEventListener("error", () => {
+    console.log("ready state", events.readyState)
+  })
+  events.addEventListener("message", (e) => {
+    console.log('got message', e.data)
+    console.log(e.data);
+    const p = document.createElement('p')
+    p.appendChild(document.createTextNode(JSON.parse(e.data)))
+    messages.appendChild(p)
+  })
+
+  form.addEventListener('submit', (event) => {
+    event.stopPropagation()
+    event.preventDefault()
+    fetch('/send?message=' + message.value)
+    message.value = ''
+  })
+</script>
+
+</html>
+  `),
   '/send': (event) => {
     const { searchParams } = new URL(event.request.url)
     const message = searchParams.get('message')
@@ -57,7 +57,7 @@ const routes = {
           console.log('Messages stream got ', e.data)
           const body = `data: ${JSON.stringify(e.data)}\n\n`
           controller.enqueue(body)
-        };
+        }
       },
       cancel () {
         console.log('disconnecting from channel')
