@@ -37,7 +37,7 @@ const routes = {
 
 addEventListener('fetch', (event) => {
   const { pathname } = new URL(event.request.url)
-  const route = routes[pathname]
+  const route = routes[pathname || '/']
   if (route) {
     return event.respondWith(route(event))
   } else {
