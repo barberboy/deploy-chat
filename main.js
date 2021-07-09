@@ -35,7 +35,7 @@ const routes = {
 </script>
 
 </html>
-  `),
+  `, { headers: { 'content-type': 'text/html' } }),
   '/send': (event) => {
     const { searchParams } = new URL(event.request.url)
     const message = searchParams.get('message')
