@@ -1,7 +1,13 @@
 const routes = {
-  '/': () => new Response(`
+  "/": () =>
+    new Response(
+      `
 <!DOCTYPE html>
 <html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
 <div id="messages"></div>
 <form id="chatbox"><input id="message" /></form>
 
@@ -33,50 +39,52 @@ const routes = {
     message.value = ''
   })
 </script>
-
+</body>
 </html>
-  `, { headers: { 'content-type': 'text/html' } }),
-  '/send': (event) => {
-    const { searchParams } = new URL(event.request.url)
-    const message = searchParams.get('message')
+  `,
+      { headers: { "content-type": "text/html" } },
+    ),
+  "/send": (event) => {
+    const { searchParams } = new URL(event.request.url);
+    const message = searchParams.get("message");
     if (!message) {
-      return new Response('?message not provided', { status: 400 })
+      return new Response("?message not provided", { status: 400 });
     }
 
     // Post a message to the broadcast channel
-    const channel = new BroadcastChannel('chat')
-    channel.postMessage(message)
-    return new Response('Success')
+    const channel = new BroadcastChannel("chat");
+    channel.postMessage(message);
+    return new Response("Success");
   },
-  '/messages': (event) => {
+  "/messages": (event) => {
     // Create a message bus to pass chat messages
-    const channel = new BroadcastChannel('chat')
+    const channel = new BroadcastChannel("chat");
     const stream = new ReadableStream({
-      start (controller) {
+      start(controller) {
         channel.onmessage = (e) => {
-          console.log('Messages stream got ', e.data)
-          const body = `data: ${JSON.stringify(e.data)}\n\n`
-          controller.enqueue(body)
-        }
+          console.log("Messages stream got ", e.data);
+          const body = `data: ${JSON.stringify(e.data)}\n\n`;
+          controller.enqueue(body);
+        };
       },
-      cancel () {
-        console.log('disconnecting from channel')
-        channel.close()
-      }
-    })
+      cancel() {
+        console.log("disconnecting from channel");
+        channel.close();
+      },
+    });
 
     return new Response(stream.pipeThrough(new TextEncoderStream()), {
-      headers: { 'content-type': 'text/event-stream' }
-    })
-  }
-}
+      headers: { "content-type": "text/event-stream" },
+    });
+  },
+};
 
-addEventListener('fetch', (event) => {
-  const { pathname } = new URL(event.request.url)
-  const route = routes[pathname || '/']
+addEventListener("fetch", (event) => {
+  const { pathname } = new URL(event.request.url);
+  const route = routes[pathname || "/"];
   if (route) {
-    return event.respondWith(route(event))
+    return event.respondWith(route(event));
   } else {
-    return event.respondWith(new Response('not found', { status: 404 }))
+    return event.respondWith(new Response("not found", { status: 404 }));
   }
-})
+});
