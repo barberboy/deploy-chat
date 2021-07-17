@@ -2,14 +2,14 @@ const routes = {
   "/": () => {
     // Fetch the index.html file relative to the main.js file
     const upstream = fetch(new URL("index.html", import.meta.url));
-    const headers = new Headers(response.headers);
+    const headers = new Headers(upstream.headers);
     headers.set("content-type", "text/html; charset=utf-8");
     return new Response(upstream.body, { ...upstream, headers });
   },
   "/send": (event) => {
     const { searchParams } = new URL(event.request.url);
     const message = searchParams.get("message");
-    
+
     if (!message) {
       return new Response("?message not provided", { status: 400 });
     }
