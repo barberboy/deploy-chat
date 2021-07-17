@@ -1,5 +1,10 @@
 const routes = {
-  "/": () => fetch(new URL("index.html", import.meta.url)),
+  "/": (event) => {
+    console.log(import.meta.url);
+    console.log(event.request.url);
+    const htmlUrl = new URL("index.html", import.meta.url);
+    return fetch(htmlUrl);
+  },
   "/send": (event) => {
     const { searchParams } = new URL(event.request.url);
     const message = searchParams.get("message");
